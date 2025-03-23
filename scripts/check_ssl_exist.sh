@@ -9,7 +9,7 @@ if [ -f "$SSL_CERT" ] && [ -f "$SSL_KEY" ]; then
     echo "SSL certificate and key for $DOMAIN found. No need for new ones."
 else
     echo "SSL certificate or key for $DOMAIN not found. Creating new one."
-    certbot certonly --webroot --webroot-path=/var/www/certbot --email eslamelhadedy50@gmail.com --agree-tos --no-eff-email  --non-interactive -d $DOMAIN 
+    certbot certonly --webroot --webroot-path=/var/www/certbot --email salahelsayed995@gmail.com --agree-tos --no-eff-email  --non-interactive -d $DOMAIN 
     if [ $? -ne 0 ]; then
         echo "Failed to generate SSL certificate for $DOMAIN."
         exit 1

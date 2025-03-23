@@ -29,7 +29,7 @@ jobs:
 
       - name: Transfer Built Files to AWS Lightsail
         run: |
-          REPO_NAME=$(basename -s .git <<< "https://github.com/${{ github.repository }}")
+          REPO_NAME=$(basename -s .git "$(echo https://github.com/${{ github.repository }})")
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo apt-get update && sudo apt-get install -y rsync"
           rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/$REPO_NAME
           

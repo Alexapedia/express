@@ -1,0 +1,462 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="keywords" content="نقل الأثاث" />
+  <meta name="description" content="شركة الحياة لنقل الأثاث" />
+  <meta name="author" content="شركة الحياة" />
+  <link rel="shortcut icon" href="{% static 'images/fevicon.png'%}" type="">
+
+  <title>إنجاز اكسبريس</title>
+
+  <!-- روابط CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+  <link href="{% static 'css/responsive.css' %}" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .header_bottom .navbar-nav {
+      margin-right: auto;
+      margin-left: 0;
+    }
+
+    .slider_section .detail-box {
+      text-align: right;
+      margin-right: auto;
+      margin-left: 0;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+      left: 0;
+      right: auto;
+    }
+
+    /* تنسيق الفوتر */
+    .footer_section {
+      background-color: #f8f9fa;
+      padding: 40px 0;
+      border-top: 1px solid #e1e1e1;
+      text-align: right;
+    }
+
+    .footer_section .container {
+      display: flex;
+      justify-content: space-between;
+      text-align: right;
+    }
+
+    .footer_section h5 {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .footer_section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer_section ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer_section .social_icons i {
+      font-size: 20px;
+      margin: 0 10px;
+    }
+
+    /* تنسيق خدمات */
+    .service_box {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #ddd;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+
+    .service_box img {
+      width: 100%;
+      height: 200px; /* Adjust the height as needed */
+      object-fit: cover; /* Ensures the images maintain their aspect ratio */
+      margin-bottom: 15px;
+    }
+    .info_section {
+      text-align: right; /* Ensure all text is aligned to the right */
+    }
+    
+    .info_section h4, .info_section p {
+      text-align: right;
+    }
+    
+    .info_section .info_contact a, .info_section .info_social a {
+      text-align: right;
+    }
+    
+    .articles_section {
+      background-color: #f9f9f9;
+      padding: 40px 0;
+    }
+  
+    .article_box {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: right;
+      background-color: #fff;
+    }
+  
+    .article_box h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+  
+    .article_box p {
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+  
+    .article_box a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  
+    .article_box a:hover {
+      text-decoration: underline;
+    }
+
+    /* تنسيق الحاوية التي تحتوي على الأيقونات */
+    .icons-container {
+      position: fixed; /* يجعل الأيقونات ثابتة على الشاشة */
+      bottom: 20px; /* المسافة من الأسفل */
+      left: 20px; /* المسافة من اليسار */
+      z-index: 9999; /* تأكد من ظهور الأيقونات فوق باقي العناصر */
+      display: flex; /* لتوزيع الأيقونات فوق بعض */
+      flex-direction: column; /* ترتيب الأيقونات فوق بعض */
+      align-items: center; /* لتوسيط الأيقونات داخل الحاوية */
+      background: linear-gradient(45deg, #25D366, #128C7E); /* تدرج لوني مائل */
+      padding: 15px;
+      border-radius: 20px; /* زوايا مستديرة */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* إضافة تأثير ظل */
+      width: 80px; /* عرض المستطيل */
+      height: 140px; /* ارتفاع المستطيل */
+      transition: transform 0.3s ease-in-out; /* حركة ناعمة للمستطيل عند التمرير */
+    }
+
+    /* تأثير عند مرور الماوس على الحاوية */
+    .icons-container:hover {
+      transform: translateY(-10px); /* رفع المستطيل لأعلى عند المرور عليه */
+    }
+
+    /* تنسيق الأيقونة داخل المستطيل */
+    .icons-container a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white; /* لون الأيقونات أبيض */
+      font-size: 30px;
+      margin: 10px 0; /* المسافة بين الأيقونات */
+      text-decoration: none; /* إزالة التسطير من الروابط */
+      transition: transform 0.3s ease; /* تأثير الحركة عند التمرير */
+    }
+
+    /* تنسيق أيقونة الواتس آب */
+    .whatsapp-icon {
+      color: #25D366; /* اللون الأصلي لأيقونة الواتس آب */
+    }
+
+    /* تنسيق أيقونة الاتصال */
+    .call-icon {
+      color: #34B7F1; /* اللون الأزرق لأيقونة الاتصال */
+    }
+
+    /* تأثير عند مرور الماوس على الأيقونة */
+    .icons-container a:hover {
+      transform: scale(1.2); /* تكبير الأيقونة عند المرور عليها */
+    }
+
+    /* فاصل بين الأيقونات */
+    .divider {
+      width: 50px;
+      height: 2px;
+      background-color: white; /* اللون الأبيض للفاصل */
+      margin: 10px 0; /* المسافة حول الفاصل */
+      border-radius: 10px; /* زوايا دائرية للفاصل */
+    }
+    
+  </style>
+</head>
+
+<body>
+  <!-- قسم البطل -->
+  <div class="hero_area">
+    <div class="hero_bg_box">
+      <img src="{% static 'images/banner-1.jpg' %}" alt="خلفية البطل">
+    </div>
+
+    <!-- رأس الصفحة -->
+    <header class="header_section">
+      <div class="header_top">
+        <div class="container-fluid">
+          <div class="header_top_content">
+            <a class="navbar-brand d-none d-lg-flex" href="{% url 'home'%}">
+              <span>إنجاز اكسبريس</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="header_bottom">
+        <div class="container-fluid">
+          <nav class="navbar navbar-expand-lg custom_nav-container">
+            <a class="navbar-brand d-flex d-lg-none" href="{% url 'home'%}">
+              <span>إنجاز اكسبريس</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="تبديل التنقل">
+              <span class=""> </span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="{% url 'home'%}">الرئيسية <span class="sr-only">(الحالية)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'services'%}">الخدمات</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'about'%}">من نحن</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'contact'%}">اتصل بنا</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'quotation'%}">طلب عرض سعر<span class="sr-only">(current)</span></a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- قسم السلايدر -->
+    <section class="slider_section">
+      <div id="customCarousel1" class="carousel slide" data-ride="carousel">
+        <div class="container">
+          <div class="carousel_btn_box">
+            <a class="carousel-control-prev" href="#customCarousel1" role="button" data-slide="prev">
+              <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+              <span class="sr-only">السابق</span>
+            </a>
+            <a class="carousel-control-next" href="#customCarousel1" role="button" data-slide="next">
+              <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+              <span class="sr-only">التالي</span>
+            </a>
+          </div>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-9 col-lg-7">
+                  <div class="detail-box">
+                    <h1>
+                      إنجاز اكسبريس  <br> لخدمات الشحن والنقل والتخليص الجمركي
+                    </h1>
+                    <p>
+                      نوفر حلولاً متكاملة بجودة عالية وأسعار تنافسية لتلبية جميع احتياجاتكم اللوجستية.
+                    </p>
+                    
+                    <div class="btn-box">
+                      <a href="{% url 'contact'%}" class="btn1">اتصل بنا</a>
+                    </div>
+                  
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- إضافة باقي السلايدر -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- قسم "من نحن" -->
+  <section class="about_section layout_padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="detail-box">
+            <div class="heading_container">
+              <h2>من نحن</h2>
+            </div>
+            <p style="direction: rtl; text-align: right;">
+              نحن مكتب متخصص في تقديم خدمات التخليص الجمركي بكفاءة وسرعة، مع ضمان الامتثال للأنظمة الجمركية لتسهيل عمليات الاستيراد والتصدير. نقدم حلولًا متكاملة تشمل الاستشارات الجمركية، إدارة الشحنات، تخليص المعاملات، وإرسال الفواتير والشهادات إلكترونيًا بدقة وسرعة. يمكن لعملائنا تتبع الشحنات.
+            </p>
+            <a href="{% url 'about'%}" style="float: right; text-align: right;">
+              اقرأ المزيد
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="img-box">
+            <img src="{% static 'images/about.jpeg' %}" alt="عن الشركة">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- قسم "الخدمات" -->
+  <section class="services_section layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>خدماتنا</h2>
+      </div>
+      <div class="row">
+        {% for service in services %}
+        <div class="col-md-4">
+          <div class="service_box">
+            <img src="{{service.img.url}}" alt="خدمة النقل">
+            <h3>{{service.name}}</h3>
+            <p>{{service.description}}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- قسم المقالات -->
+<section class="articles_section layout_padding">
+  <div class="container">
+    <div class="heading_container">
+      <h2>مقالاتنا</h2>
+    </div>
+    <div class="row mt-5">
+      {% for article in articles %}
+      <div class="col-md-12">
+        <div class="article_box">
+          <h3>{{ article.title }}</h3>
+          <p>{{ article.content|truncatewords:30 }}...</p>
+          <a href="{{ article.get_absolute_url }}">اقرأ المزيد</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- info section -->
+<section class="info_section layout_padding2">
+  <div class="container">
+    <div class="row">
+      <!-- About Section -->
+      <div class="col-md-6 col-lg-4 info-col">
+        <div class="info_detail">
+          <h4>
+            عن الشركة
+          </h4>
+          <p>
+            شركة إنجاز اكسبريس لخدمات الشحن والنقل والتخليص الجمركي. نقدم خدمات متكاملة وآمنة مع فريق متخصص يضمن تنفيذ العمليات بكفاءة واحترافية.
+          </p>
+          <div class="info_social">
+            <a href="https://www.facebook.com/profile.php?id=61552555675197&mibextid=wwXIfr&rdid=CgVfegGqScjwWNHy&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1BJJM3LFJq%2F%3Fmibextid%3DwwXIfr#">
+              <i class="fa fa-facebook" aria-hidden="true"></i>
+            </a>
+            {% comment %} <a href="https://x.com/MhmdRzq93280?t=o2KxGH2YKMqKH-ED1vH-vQ&s=09">
+              <i class="fa fa-instagram" aria-hidden="true"></i>
+            </a> {% endcomment %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="col-md-6 col-lg-4 info-col">
+        <div class="info_contact">
+          <h4>
+            العنوان
+          </h4>
+          <div class="contact_link_box">
+            <a href="">
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              <span>
+                 الغويفات - أبو ظبي - الإمارات العربية المتحدة
+              </span>
+            </a>
+            <a href="tel:+971 50 296 2008">
+              <i class="fa fa-phone" aria-hidden="true"></i>
+              <span>
+                تواصل عبر الهاتف
+              </span>
+            </a>
+            <a href="mailto:injazexprees@outlook.com">
+              <i class="fa fa-envelope" aria-hidden="true"></i>
+              <span>
+                injazexprees@outlook.com
+              </span>
+            </a>
+            <a href="https://wa.me/971501856621" target="_blank">
+              <i class="fa fa-whatsapp" aria-hidden="true"></i>
+              <span>
+                تواصل عبر الواتساب
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subscription Section -->
+      <div class="col-md-6 col-lg-4 info-col">
+        <div class="info_contact">
+          <h4>
+            الاشتراك
+          </h4>
+          <form action="#">
+            <input type="text" placeholder="أدخل البريد الإلكتروني" />
+            <button type="submit">
+              اشترك
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- حاوية الأيقونات -->
+<div class="icons-container">
+  <!-- أيقونة واتس آب -->
+  <a href="https://wa.me/971501856621" target="_blank" class="whatsapp-icon">
+    <i class="fa fa-whatsapp" aria-hidden="true"></i>
+  </a>
+  
+  <!-- فاصل بين الأيقونات -->
+  <div class="divider"></div>
+  
+  <!-- أيقونة الاتصال -->
+  <a href="tel:+971502962008" class="call-icon">
+    <i class="fa fa-phone" aria-hidden="true"></i>
+  </a>
+</div>
+
+
+
+  <!-- Required JavaScript Libraries -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

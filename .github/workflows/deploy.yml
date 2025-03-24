@@ -31,7 +31,8 @@ jobs:
         run: |
           REPO_NAME=$(basename "${{ github.repository }}")
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo apt-get update && sudo apt-get install -y rsync"
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/$REPO_NAME
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.DROPLET_USERNAME }}/$REPO_NAME
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo mv /home/${{ secrets.DROPLET_USERNAME }}/$REPO_NAME /root/"
           
   deploy:
     runs-on: ubuntu-latest

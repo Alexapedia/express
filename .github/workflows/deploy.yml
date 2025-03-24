@@ -27,15 +27,16 @@ jobs:
       - name: Disable SSH Host Key Checking
         run: echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-      - name: Prepare Remote Directory
+      - name: Prepare Deployment Directory on Server
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo mkdir -p /home/admin/express && sudo chown -R $USER:$USER /home/admin/express"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "
+            sudo mkdir -p /home/${{ secrets.DROPLET_USERNAME }}/express && 
+            sudo chown -R ${{ secrets.DROPLET_USERNAME }}:${{ secrets.DROPLET_USERNAME }} /home/${{ secrets.DROPLET_USERNAME }}/express
+          "
 
       - name: Transfer Built Files to Server
         run: |
-          REPO_NAME=$(basename -s .git "$(echo https://github.com/${{ github.repository }})")
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo apt-get update && sudo apt-get install -y rsync"
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/home/admin/express
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.DROPLET_USERNAME }}/express
 
   deploy:
     runs-on: ubuntu-latest
@@ -49,8 +50,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             sudo apt-get update && sudo apt-get install -y jq
-            echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /home/admin/.env
-            echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /home/admin/.env
+            echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /home/${{ secrets.DROPLET_USERNAME }}/express/.env
+            echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /home/${{ secrets.DROPLET_USERNAME }}/express/.env
 
       - name: SSH Install Docker and Docker Compose
         uses: appleboy/ssh-action@v0.1.7
@@ -74,15 +75,17 @@ jobs:
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            export $(grep -v '^#' /home/admin/.env | xargs)
-            REPO_NAME=$(basename -s .git <<< "https://github.com/${{ github.repository }}")
-            cd /home/admin/express || { echo "Directory not found"; exit 1; }
+            export $(grep -v '^#' /home/${{ secrets.DROPLET_USERNAME }}/express/.env | xargs)
+            cd /home/${{ secrets.DROPLET_USERNAME }}/express || { echo "Directory not found"; exit 1; }
             
             sed -i "s/{{DOMAIN_NAME}}/${{ vars.DOMAIN_NAME }}/g" nginx/conf/default.conf
             sed -i "s/{{DOMAIN_NAME}}/${{ vars.DOMAIN_NAME }}/g" nginx/conf/ssl.conf.template
             
-            DOMAIN_NAME=${{ vars.DOMAIN_NAME }} docker compose down --rmi all || true
-            DOMAIN_NAME=${{ vars.DOMAIN_NAME }} docker compose up -d --build
+            echo "Stopping old containers..."
+            docker compose down || true
+
+            echo "Building and running new containers..."
+            docker compose up -d --build
             
             echo "Reloading NGINX..."
             docker restart nginx

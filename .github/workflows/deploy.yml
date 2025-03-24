@@ -44,12 +44,12 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            sudo touch /root/.env
-            sudo chmod 666 /root/.env
-            echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' | sudo tee /root/.env > /dev/null
-            echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' | sudo tee -a /root/.env > /dev/null
-            sudo chmod 600 /root/.env
+        script: |
+          sudo touch /root/.env
+          sudo chmod 666 /root/.env
+          echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' | sudo tee /root/.env > /dev/null
+          echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' | sudo tee -a /root/.env > /dev/null
+          sudo chmod 600 /root/.env
 
       - name: SSH Install Docker and Docker Compose
         uses: appleboy/ssh-action@v0.1.7

@@ -27,12 +27,15 @@ jobs:
       - name: Disable SSH Host Key Checking
         run: echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
+      - name: Prepare Remote Directory
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo mkdir -p /home/admin/express && sudo chown -R $USER:$USER /home/admin/express"
+
       - name: Transfer Built Files to Server
         run: |
-          set -e
           REPO_NAME=$(basename -s .git "$(echo https://github.com/${{ github.repository }})")
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }} "sudo apt-get update && sudo apt-get install -y rsync"
-          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/$REPO_NAME
+          rsync -avz --delete -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" . ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/home/admin/express
 
   deploy:
     runs-on: ubuntu-latest
@@ -45,10 +48,9 @@ jobs:
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            set -e
             sudo apt-get update && sudo apt-get install -y jq
-            echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /root/.env
-            echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /root/.env
+            echo '${{ toJSON(secrets) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' > /home/admin/.env
+            echo '${{ toJSON(vars) }}' | jq -r 'keys[] as $k | "\($k)=\(.[$k])"' >> /home/admin/.env
 
       - name: SSH Install Docker and Docker Compose
         uses: appleboy/ssh-action@v0.1.7
@@ -57,19 +59,12 @@ jobs:
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            set -e
             sudo apt-get update
-            if ! command -v docker &> /dev/null; then
+            if ! [ -x "$(command -v docker)" ]; then
               echo "Installing Docker..."
               sudo apt-get install -y docker.io
             else
               echo "Docker already installed."
-            fi
-            if ! command -v docker-compose &> /dev/null; then
-              echo "Installing Docker Compose..."
-              sudo apt-get install -y docker-compose
-            else
-              echo "Docker Compose already installed."
             fi
 
       - name: Deploy via SSH and Run Docker Compose
@@ -79,23 +74,20 @@ jobs:
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            set -e
-            export $(grep -v '^#' /root/.env | xargs)
+            export $(grep -v '^#' /home/admin/.env | xargs)
             REPO_NAME=$(basename -s .git <<< "https://github.com/${{ github.repository }}")
-            cd /root/$REPO_NAME || { echo "❌ Directory not found"; exit 1; }
+            cd /home/admin/express || { echo "Directory not found"; exit 1; }
             
             sed -i "s/{{DOMAIN_NAME}}/${{ vars.DOMAIN_NAME }}/g" nginx/conf/default.conf
             sed -i "s/{{DOMAIN_NAME}}/${{ vars.DOMAIN_NAME }}/g" nginx/conf/ssl.conf.template
             
-            echo "🚀 Stopping previous containers..."
-            docker compose down --rmi all || true
-            
-            echo "🚀 Building and starting new containers..."
+            DOMAIN_NAME=${{ vars.DOMAIN_NAME }} docker compose down --rmi all || true
             DOMAIN_NAME=${{ vars.DOMAIN_NAME }} docker compose up -d --build
             
-            echo "🔄 Reloading NGINX..."
-            docker restart nginx || echo "⚠️ Failed to restart NGINX"
-
-            echo "🧹 Cleaning up unused Docker images..."
+            echo "Reloading NGINX..."
+            docker restart nginx
+            
+            cp nginx/conf/ssl.conf.template nginx/conf/ssl.conf
+            echo "Cleaning up unused Docker images"
             docker image prune -a -f
-            exit 0
+            exit 0 
